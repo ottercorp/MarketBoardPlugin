@@ -1081,7 +1081,7 @@ namespace MarketBoardPlugin.GUI
 
         var currentDc = localPlayer.CurrentWorld.Value.DataCenter;
         var dcWorlds = this.plugin.DataManager.GetExcelSheet<World>()
-          .Where(w => w.DataCenter.RowId == currentDc.RowId && (w.IsPublic || w.Region == 5))
+          .Where(w => w.DataCenter.RowId == currentDc.RowId && (w.IsPublic || (w.RowId > 1000 && w.UserType == 101))) // CN Servers RowId are all beyond 1000
           .OrderBy(w => w.Name.ExtractText())
           .Select(w =>
           {
