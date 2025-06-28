@@ -787,7 +787,7 @@ namespace MarketBoardPlugin.GUI
           }
 
           ImGui.Separator();
-          if (ImGui.BeginTabItem("图标##chartsTab"))
+          if (ImGui.BeginTabItem("图表##chartsTab"))
           {
             this.titleFontHandle.Push();
             var tableHeight = (ImGui.GetContentRegionAvail().Y / 2) - (ImGui.GetTextLineHeightWithSpacing() * 2);
