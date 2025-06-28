@@ -91,7 +91,7 @@ namespace MarketBoardPlugin
       // Set up command handlers
       this.CommandManager.AddHandler("/pmb", new CommandInfo(this.OnOpenMarketBoardCommand)
       {
-        HelpMessage = "Open the market board window.",
+        HelpMessage = "打开市场板窗口.",
       });
 
       this.PluginInterface.UiBuilder.Draw += this.DrawUi;
@@ -281,7 +281,7 @@ namespace MarketBoardPlugin
 
       args.AddMenuItem(new MenuItem
       {
-        Name = "Search in Market Board",
+        Name = "在市场板内搜索",
         OnClicked = this.GetMenuItemClickedHandler(itemId),
         Prefix = SeIconChar.BoxedLetterM,
         PrefixColor = 48,

@@ -33,25 +33,25 @@ namespace MarketBoardPlugin
     /// <inheritdoc/>
     public override void Draw()
     {
-      this.Checkbox("Context menu integration", "Toggles whether context menu integration is enabled", this.Plugin.Config.ContextMenuIntegration, (v) => this.Plugin.Config.ContextMenuIntegration = v);
+      this.Checkbox("右键菜单集成", "启用或禁用右键菜单集成", this.Plugin.Config.ContextMenuIntegration, (v) => this.Plugin.Config.ContextMenuIntegration = v);
 
-      this.Checkbox("Gil Icon Shown", "Toggles whether the Gil icon is shown", this.Plugin.Config.PriceIconShown, (v) => this.Plugin.Config.PriceIconShown = v);
+      this.Checkbox("显示金币图标", "是否显示金币图标", this.Plugin.Config.PriceIconShown, (v) => this.Plugin.Config.PriceIconShown = v);
 
-      this.Checkbox("No Gil Sales Tax", "Toggles whether the Gil Sales Tax is included", this.Plugin.Config.NoGilSalesTax, (v) =>
+      this.Checkbox("不包含税率", "启用后将不包含税率", this.Plugin.Config.NoGilSalesTax, (v) =>
       {
         this.Plugin.Config.NoGilSalesTax = v;
         this.Plugin.PluginInterface.SavePluginConfig(this.Plugin.Config);
         this.Plugin.ResetMarketData();
       });
 
-      this.Checkbox("Disable Recent History", "Toggles whether the recent history is disabled", this.Plugin.Config.RecentHistoryDisabled, (v) => this.Plugin.Config.RecentHistoryDisabled = v);
+      this.Checkbox("禁用最近购买历史", "启用或禁用最近购买历史", this.Plugin.Config.RecentHistoryDisabled, (v) => this.Plugin.Config.RecentHistoryDisabled = v);
 
-      this.Checkbox("Watch for hovered item", "Automatically select the item hovered in any of the in-game inventory window after 1 second.", this.Plugin.Config.WatchForHovered, (v) => this.Plugin.Config.WatchForHovered = v);
+      this.Checkbox("自动查询选中物品", "自动查询选中超过 1 秒的物品.", this.Plugin.Config.WatchForHovered, (v) => this.Plugin.Config.WatchForHovered = v);
 
-      this.Checkbox("Hide Ko-Fi button", "Toggles whether the Ko-Fi button should be hidden", this.Plugin.Config.KofiHidden, (v) => this.Plugin.Config.KofiHidden = v);
+      this.Checkbox("隐藏 Ko-Fi 按钮", "启用或禁用 Ko-Fi 按钮", this.Plugin.Config.KofiHidden, (v) => this.Plugin.Config.KofiHidden = v);
 
       var itemRefreshTimeout = this.Plugin.Config.ItemRefreshTimeout;
-      ImGui.Text("Item buffer Timeout (ms) :");
+      ImGui.Text("物品缓存时长 (ms) :");
       ImGui.InputInt("###refreshTimeout", ref itemRefreshTimeout);
       if (this.Plugin.Config.ItemRefreshTimeout != itemRefreshTimeout)
       {
@@ -60,7 +60,7 @@ namespace MarketBoardPlugin
       }
 
       var listingCount = this.Plugin.Config.ListingCount;
-      ImGui.Text("Listing count :");
+      ImGui.Text("上架物品显示数量:");
       ImGui.InputInt("###listingCount", ref listingCount);
       if (this.Plugin.Config.ListingCount != listingCount)
       {
@@ -69,7 +69,7 @@ namespace MarketBoardPlugin
       }
 
       var historyCount = this.Plugin.Config.HistoryCount;
-      ImGui.Text("History count :");
+      ImGui.Text("最近购买历史显示数量:");
       ImGui.InputInt("###historyCount", ref historyCount);
       if (this.Plugin.Config.HistoryCount != historyCount)
       {

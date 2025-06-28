@@ -59,7 +59,7 @@ namespace MarketBoardPlugin.GUI
 
     private readonly Dictionary<uint, MarketDataResponse> marketDataCache;
 
-    private readonly string[] categoryLabels = new[] { "All", "Weapons", "Equipments", "Others", "Furniture" };
+    private readonly string[] categoryLabels = new[] { "全部", "武器", "装备", "其他", "家具" };
 
     private Dictionary<ItemSearchCategory, List<Item>> sortedCategoriesAndItems;
 
@@ -245,7 +245,7 @@ namespace MarketBoardPlugin.GUI
       ImGui.BeginChild("itemListColumn", new Vector2(267, 0) * scale, true);
 
       ImGui.SetNextItemWidth((-64 * ImGui.GetIO().FontGlobalScale) - (ImGui.GetStyle().ItemSpacing.X * 2));
-      ImGuiOverrides.InputTextWithHint("##searchString", "Search for item", ref this.searchString, 256);
+      ImGuiOverrides.InputTextWithHint("##searchString", "搜索物品", ref this.searchString, 256);
 
       ImGui.PushFont(UiBuilder.IconFont);
       ImGui.PushStyleVar(ImGuiStyleVar.ButtonTextAlign, new Vector2(0.5f, 0.5f));
@@ -277,7 +277,7 @@ namespace MarketBoardPlugin.GUI
 
       var previousYCursor = ImGui.GetCursorPosY();
       ImGui.SetCursorPosY(previousYCursor - (ImGui.GetFontSize() / 2.0f) + (13 * scale));
-      ImGui.Text("Advanced Search");
+      ImGui.Text("高级搜索");
       ImGui.SameLine();
       ImGui.SetCursorPosY(previousYCursor);
       ImGui.PushFont(UiBuilder.IconFont);
@@ -292,25 +292,25 @@ namespace MarketBoardPlugin.GUI
 
       if (this.advancedSearchMenuOpen)
       {
-        ImGui.Text("Category: ");
+        ImGui.Text("分类: ");
         ImGui.SameLine();
         ImGui.Combo("###ListBox", ref this.itemCategory, this.categoryLabels, this.categoryLabels.Length);
-        ImGui.Text("HQ Only : ");
+        ImGui.Text("仅 HQ: ");
         ImGui.SameLine();
         ImGui.Checkbox("###Checkbox", ref this.hQOnly);
-        ImGui.Text("Min Qty : ");
+        ImGui.Text("最低数量: ");
         ImGui.SameLine();
         ImGui.InputInt("###MinQuantity", ref this.minQuantityFilter);
-        ImGui.Text("Class: ");
+        ImGui.Text("职业: ");
         ImGui.SameLine();
         if (ImGui.BeginCombo(
           "###ClassJobCombo",
-          this.selectedClassJob == null ? "All Classes" : this.selectedClassJob?.Abbreviation.ExtractText()))
+          this.selectedClassJob == null ? "所有职业" : this.selectedClassJob?.Name.ExtractText()))
         {
           void SelectClassJob(ClassJob? classJob)
           {
             var selected = this.selectedClassJob?.RowId == classJob?.RowId;
-            if (ImGui.Selectable(classJob == null ? "All Classes" : classJob?.Abbreviation.ExtractText(), selected))
+            if (ImGui.Selectable(classJob == null ? "所有职业" : classJob?.Name.ExtractText(), selected))
             {
               this.selectedClassJob = classJob;
             }
@@ -333,10 +333,10 @@ namespace MarketBoardPlugin.GUI
 
         if (this.itemCategory is 1 or 2)
         {
-          ImGui.Text("Min level : ");
+          ImGui.Text("最低等级: ");
           ImGui.SameLine();
           ImGui.InputInt("##lvlmin", ref this.lvlmin);
-          ImGui.Text("Max level : ");
+          ImGui.Text("最高等级: ");
           ImGui.SameLine();
           ImGui.InputInt("##lvlmax", ref this.lvlmax);
         }
@@ -354,7 +354,7 @@ namespace MarketBoardPlugin.GUI
 
       if (this.searchHistoryOpen)
       {
-        ImGui.Text("History");
+        ImGui.Text("搜索历史");
         ImGui.Separator();
         var sheet = this.plugin.DataManager.Excel.GetSheet<Item>();
         foreach (var id in this.plugin.Config.History.ToArray())
@@ -373,7 +373,7 @@ namespace MarketBoardPlugin.GUI
       }
       else if (this.favoritesOpen)
       {
-        ImGui.Text("Favorites");
+        ImGui.Text("收藏");
         ImGui.Separator();
         var sheet = this.plugin.DataManager.Excel.GetSheet<Item>();
         foreach (var id in this.plugin.Config.Favorites.ToArray())
@@ -393,7 +393,7 @@ namespace MarketBoardPlugin.GUI
 
           if (ImGui.BeginPopupContextItem($"itemContextMenu{itemName}"))
           {
-            if (ImGui.Selectable("Remove from the favorites"))
+            if (ImGui.Selectable("从收藏列表中移除"))
             {
               this.plugin.Config.Favorites.Remove(item.Value.RowId);
             }
@@ -463,7 +463,7 @@ namespace MarketBoardPlugin.GUI
                   this.ChangeSelectedItem(item.RowId);
                 }
 
-                if (ImGui.Selectable("Add to the shopping list") && this.marketData != null && this.selectedWorld >= 0)
+                if (ImGui.Selectable("添加到购物清单") && this.marketData != null && this.selectedWorld >= 0)
                 {
                   MarketDataListing itm = this.marketData.Listings.OrderBy(l => l.PricePerUnit).ToList()[0];
                   double price = this.plugin.Config.NoGilSalesTax
@@ -472,7 +472,7 @@ namespace MarketBoardPlugin.GUI
                   this.plugin.ShoppingList.Add(new SavedItem(item, price, itm.WorldName));
                 }
 
-                if (ImGui.Selectable("Add to the favorites"))
+                if (ImGui.Selectable("添加到收藏"))
                 {
                   this.plugin.Config.Favorites.Add(item.RowId);
                 }
@@ -510,7 +510,7 @@ namespace MarketBoardPlugin.GUI
         this.progressPosition = 0.0f;
       }
 
-      ImGui.Text("Settings : ");
+      ImGui.Text("设置: ");
       ImGui.SameLine();
       ImGui.PushFont(UiBuilder.IconFont);
       if (ImGui.Button($"{(char)FontAwesomeIcon.Cog}"))
@@ -585,8 +585,8 @@ namespace MarketBoardPlugin.GUI
         {
           ImGui.SetNextItemWidth(250 * scale);
           ImGui.Text(
-            $"Last update: {DateTimeOffset.FromUnixTimeMilliseconds(this.marketData.LastUploadTime).LocalDateTime:G}" +
-                $"\nLast Fetch : {DateTimeOffset.FromUnixTimeMilliseconds(this.marketData.FetchTimestamp).LocalDateTime:G}");
+            $"上次更新: {DateTimeOffset.FromUnixTimeMilliseconds(this.marketData.LastUploadTime).LocalDateTime:G}" +
+                $"\n上次获取: {DateTimeOffset.FromUnixTimeMilliseconds(this.marketData.FetchTimestamp).LocalDateTime:G}");
 
           ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetTextLineHeight() - ImGui.GetTextLineHeightWithSpacing());
         }
@@ -594,7 +594,7 @@ namespace MarketBoardPlugin.GUI
         {
           ImGui.SetNextItemWidth(250 * scale);
           ImGui.Text(
-            $"Fetching data from Universalis...");
+            $"正在从 Universalis 获取数据...");
           ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetTextLineHeight() - ImGui.GetTextLineHeightWithSpacing());
         }
 
@@ -602,12 +602,12 @@ namespace MarketBoardPlugin.GUI
 
         if (ImGui.BeginTabBar("tabBar"))
         {
-          if (ImGui.BeginTabItem("Market Data##marketDataTab"))
+          if (ImGui.BeginTabItem("市场数据##marketDataTab"))
           {
             this.titleFontHandle.Push();
             int usedTile = this.plugin.Config.RecentHistoryDisabled ? 1 : 2;
             var tableHeight = (ImGui.GetContentRegionAvail().Y / usedTile) - (ImGui.GetTextLineHeightWithSpacing() * 2);
-            ImGui.Text("Current listings (Includes 5%% GST)");
+            ImGui.Text(this.plugin.Config.NoGilSalesTax ? "当前上架信息" : "当前上架信息 (已包含 5%% 税率)");
             this.titleFontHandle.Pop();
 
             ImGui.BeginChild("currentListings", new Vector2(0.0f, tableHeight));
@@ -622,13 +622,13 @@ namespace MarketBoardPlugin.GUI
             ImGui.Separator();
             ImGui.Text("HQ");
             ImGui.NextColumn();
-            ImGui.Text("Price");
+            ImGui.Text("价格");
             ImGui.NextColumn();
-            ImGui.Text("Qty");
+            ImGui.Text("数量");
             ImGui.NextColumn();
-            ImGui.Text("Total");
+            ImGui.Text("总价");
             ImGui.NextColumn();
-            ImGui.Text("Retainer");
+            ImGui.Text("雇员");
             ImGui.NextColumn();
             ImGui.Separator();
 
@@ -706,7 +706,7 @@ namespace MarketBoardPlugin.GUI
               ImGui.Separator();
 
               this.titleFontHandle.Push();
-              ImGui.Text("Recent history");
+              ImGui.Text("最近购买历史");
               this.titleFontHandle.Pop();
 
               ImGui.BeginChild("recentHistory", new Vector2(0.0f, tableHeight));
@@ -721,15 +721,15 @@ namespace MarketBoardPlugin.GUI
               ImGui.Separator();
               ImGui.Text("HQ");
               ImGui.NextColumn();
-              ImGui.Text("Price");
+              ImGui.Text("价格");
               ImGui.NextColumn();
-              ImGui.Text("Qty");
+              ImGui.Text("数量");
               ImGui.NextColumn();
-              ImGui.Text("Total");
+              ImGui.Text("总价");
               ImGui.NextColumn();
-              ImGui.Text("Date");
+              ImGui.Text("日期");
               ImGui.NextColumn();
-              ImGui.Text("Buyer");
+              ImGui.Text("买家");
               ImGui.NextColumn();
               ImGui.Separator();
 
@@ -787,7 +787,7 @@ namespace MarketBoardPlugin.GUI
           }
 
           ImGui.Separator();
-          if (ImGui.BeginTabItem("Charts##chartsTab"))
+          if (ImGui.BeginTabItem("图标##chartsTab"))
           {
             this.titleFontHandle.Push();
             var tableHeight = (ImGui.GetContentRegionAvail().Y / 2) - (ImGui.GetTextLineHeightWithSpacing() * 2);
@@ -796,7 +796,7 @@ namespace MarketBoardPlugin.GUI
             if (this.marketData?.RecentHistory != null && this.marketData?.RecentHistory.Count > 0)
             {
               this.titleFontHandle.Push();
-              ImGui.Text("Price variations (per unit)");
+              ImGui.Text("价格变动 (每单位)");
               this.titleFontHandle.Pop();
 
               if (ImPlot.BeginPlot("##pricePlot", new Vector2(-1, tableHeight)))
@@ -814,14 +814,14 @@ namespace MarketBoardPlugin.GUI
                 ImPlot.SetupAxesLimits(now.AddDays(-7).ToUnixTimeSeconds(), now.ToUnixTimeSeconds(), 0, y.Max(), ImPlotCond.Always);
                 ImPlot.SetupAxisScale(ImAxis.X1, ImPlotScale.Time);
                 ImPlot.SetNextMarkerStyle(ImPlotMarker.Circle);
-                ImPlot.PlotLine("Price", ref x.ToArray()[0], ref y.ToArray()[0], x.Count);
+                ImPlot.PlotLine("价格", ref x.ToArray()[0], ref y.ToArray()[0], x.Count);
                 ImPlot.EndPlot();
               }
 
               ImGui.Separator();
 
               this.titleFontHandle.Push();
-              ImGui.Text("Traded volumes");
+              ImGui.Text("交易量");
               this.titleFontHandle.Pop();
 
               if (ImPlot.BeginPlot("##qtyPlot", new Vector2(-1, tableHeight)))
@@ -838,7 +838,7 @@ namespace MarketBoardPlugin.GUI
 
                 ImPlot.SetupAxesLimits(now.AddDays(-7).ToUnixTimeSeconds(), now.ToUnixTimeSeconds(), 0, y.Max(), ImPlotCond.Always);
                 ImPlot.SetupAxisScale(ImAxis.X1, ImPlotScale.Time);
-                ImPlot.PlotBars("Quantities", ref x.ToArray()[0], ref y.ToArray()[0], x.Count, 3600);
+                ImPlot.PlotBars("数量", ref x.ToArray()[0], ref y.ToArray()[0], x.Count, 3600);
                 ImPlot.EndPlot();
               }
             }
@@ -860,7 +860,7 @@ namespace MarketBoardPlugin.GUI
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, 0xDD000000 | buttonColor);
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, 0xAA000000 | buttonColor);
 
-        if (ImGui.Button("Data provided by Universalis"))
+        if (ImGui.Button("由 Universalis 提供数据"))
         {
           var universalisUrl = "https://universalis.app";
           if (this.selectedItem != null)
@@ -881,7 +881,7 @@ namespace MarketBoardPlugin.GUI
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, 0xDD000000 | buttonColor);
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, 0xAA000000 | buttonColor);
 
-        if (ImGui.Button("Universalis API seems down"))
+        if (ImGui.Button("Universalis API 可能离线"))
         {
           Utilities.OpenBrowser("https://status.universalis.app");
         }
@@ -893,7 +893,7 @@ namespace MarketBoardPlugin.GUI
 
       if (!this.plugin.Config.KofiHidden)
       {
-        var buttonText = "Support on Ko-fi";
+        var buttonText = "在 Ko-fi 上支持";
         var buttonColor = 0x005E5BFFu;
         ImGui.PushStyleColor(ImGuiCol.Button, 0xFF000000 | buttonColor);
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, 0xDD000000 | buttonColor);
@@ -1057,7 +1057,7 @@ namespace MarketBoardPlugin.GUI
             continue;
           }
 
-          sortedCategoriesDict.Add(c, this.items.Where(i => i.ItemSearchCategory.RowId == c.RowId).OrderBy(i => ConvertItemNameToSortableFormat(i.Name.ExtractText())).ToList());
+          sortedCategoriesDict.Add(c, [.. this.items.Where(i => i.ItemSearchCategory.RowId == c.RowId).OrderBy(i => ConvertItemNameToSortableFormat(i.Name.ExtractText()))]);
         }
 
         return sortedCategoriesDict;
@@ -1106,8 +1106,8 @@ namespace MarketBoardPlugin.GUI
         };
 
         this.worldList.Clear();
-        this.worldList.Add((regionName, $"Cross-DC {SeIconChar.CrossWorld.ToChar()}"));
-        this.worldList.Add((currentDc.Value.Name.ExtractText(), $"Cross-World {SeIconChar.CrossWorld.ToChar()}"));
+        this.worldList.Add((regionName, $"跨数据中心 {SeIconChar.CrossWorld.ToChar()}"));
+        this.worldList.Add((currentDc.Value.Name.ExtractText(), $"跨服务器 {SeIconChar.CrossWorld.ToChar()}"));
         this.worldList.AddRange(dcWorlds);
 
         if (this.plugin.Config.CrossDataCenter)

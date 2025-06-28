@@ -50,17 +50,17 @@ namespace MarketBoardPlugin
     public override void Draw()
     {
       ImGui.Columns(4, "recentHistoryColumns");
-      ImGui.Text("Name");
+      ImGui.Text("名称");
       ImGui.NextColumn();
-      ImGui.Text("Price");
+      ImGui.Text("价格");
       ImGui.NextColumn();
-      ImGui.Text("World");
+      ImGui.Text("服务器");
       ImGui.NextColumn();
-      ImGui.Text("Action");
+      ImGui.Text("操作");
       ImGui.NextColumn();
       ImGui.Separator();
 
-      List<SavedItem> todel = new List<SavedItem>();
+      List<SavedItem> todel = [];
 
       int k = 0;
       foreach (var item in this.Plugin.ShoppingList)
@@ -82,7 +82,7 @@ namespace MarketBoardPlugin
         ImGui.PushFont(UiBuilder.IconFont);
         if (ImGui.Button($"{(char)FontAwesomeIcon.Slash}##shoplist" + k, new Vector2(32 * ImGui.GetIO().FontGlobalScale, 1.5f * ImGui.GetItemRectSize().Y)))
         {
-          todel.Add(item);
+            todel.Add(item);
         }
 
         ImGui.PopFont();
