@@ -604,7 +604,7 @@ namespace MarketBoardPlugin.GUI
             this.titleFontHandle.Push();
             int usedTile = this.plugin.Config.RecentHistoryDisabled ? 1 : 2;
             var tableHeight = (ImGui.GetContentRegionAvail().Y / usedTile) - (ImGui.GetTextLineHeightWithSpacing() * 2);
-            ImGui.Text(this.plugin.Config.NoGilSalesTax ? "当前上架信息" : "当前上架信息 (已包含 5%% 税率)");
+            ImGui.Text(this.plugin.Config.NoGilSalesTax ? "当前上架信息" : "当前上架信息 (已包含 5% 税率)");
             this.titleFontHandle.Pop();
 
             ImGui.BeginChild("currentListings", new Vector2(0.0f, tableHeight));
