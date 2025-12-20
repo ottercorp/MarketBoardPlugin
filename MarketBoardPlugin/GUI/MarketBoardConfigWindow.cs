@@ -6,8 +6,8 @@ namespace MarketBoardPlugin
 {
   using System;
   using System.Numerics;
-  using Dalamud.Interface.Windowing;
   using Dalamud.Bindings.ImGui;
+  using Dalamud.Interface.Windowing;
   using MarketBoardPlugin.Helpers;
 
   /// <summary>
@@ -49,6 +49,13 @@ namespace MarketBoardPlugin
       this.Checkbox("自动查询选中物品", "自动查询选中超过 1 秒的物品.", this.Plugin.Config.WatchForHovered, (v) => this.Plugin.Config.WatchForHovered = v);
 
       this.Checkbox("隐藏 Ko-Fi 按钮", "启用或禁用 Ko-Fi 按钮", this.Plugin.Config.KofiHidden, (v) => this.Plugin.Config.KofiHidden = v);
+
+      this.Checkbox("Include Oceania DC", "Toggles whether the Oceania DC should be included in the Cross-DC filter", this.Plugin.Config.IncludeOceaniaDC, (v) =>
+      {
+        this.Plugin.Config.IncludeOceaniaDC = v;
+        this.Plugin.PluginInterface.SavePluginConfig(this.Plugin.Config);
+        this.Plugin.ResetMarketData();
+      });
 
       var itemRefreshTimeout = this.Plugin.Config.ItemRefreshTimeout;
       ImGui.Text("物品缓存时长 (ms) :");
