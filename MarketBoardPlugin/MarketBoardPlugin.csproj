@@ -1,13 +1,13 @@
-<Project Sdk="Dalamud.NET.Sdk/14.0.1">
+﻿<Project Sdk="Dalamud.NET.Sdk/14.0.1">
   <PropertyGroup>
     <AssemblyName>MarketBoardPlugin</AssemblyName>
     <Authors>Florian "fmauNeko" Maunier</Authors>
     <DocumentationFile>bin/$(Configuration)/$(TargetFramework)/$(AssemblyName).xml</DocumentationFile>
     <DebugType>PdbOnly</DebugType>
     <GenerateFullPaths>true</GenerateFullPaths>
-    <AssemblyVersion>1.12.1</AssemblyVersion>
-    <FileVersion>1.12.1</FileVersion>
-    <Version>1.12.1</Version>
+    <AssemblyVersion>1.12.2</AssemblyVersion>
+    <FileVersion>1.12.2</FileVersion>
+    <Version>1.12.2</Version>
     <Company>Florian Maunier</Company>
     <Description>Market board plugin for Dalamud.</Description>
     <Copyright>Copyright (c) Florian Maunier. All rights reserved.</Copyright>
