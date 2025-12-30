@@ -4,15 +4,6 @@
 
 namespace MarketBoardPlugin.GUI
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Globalization;
-  using System.Linq;
-  using System.Numerics;
-  using System.Text;
-  using System.Text.RegularExpressions;
-  using System.Threading;
-  using System.Threading.Tasks;
   using Dalamud.Bindings.ImGui;
   using Dalamud.Bindings.ImPlot;
   using Dalamud.Game.Text;
@@ -27,6 +18,15 @@ namespace MarketBoardPlugin.GUI
   using MarketBoardPlugin.Helpers;
   using MarketBoardPlugin.Models.ShoppingList;
   using MarketBoardPlugin.Models.Universalis;
+  using System;
+  using System.Collections.Generic;
+  using System.Globalization;
+  using System.Linq;
+  using System.Numerics;
+  using System.Text;
+  using System.Text.RegularExpressions;
+  using System.Threading;
+  using System.Threading.Tasks;
 
   /// <summary>
   /// The market board window.
@@ -57,6 +57,10 @@ namespace MarketBoardPlugin.GUI
     private readonly string[] categoryLabels = new[] { "全部", "武器", "装备", "其他", "家具" };
 
     private readonly CancellationTokenSource statusCheckCancellationTokenSource = new();
+
+    private readonly Vector2 mannequinIconSize = new(16, 16);
+
+    private Vector2 mannequinIconUV1 = new(.5f, .57f);
 
     private Dictionary<ItemSearchCategory, List<Item>> sortedCategoriesAndItems;
 
@@ -113,6 +117,8 @@ namespace MarketBoardPlugin.GUI
 
     private bool isUniversalisUp;
 
+    private ISharedImmediateTexture? mannequinIcon;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MarketBoardWindow"/> class.
     /// </summary>
@@ -129,6 +135,12 @@ namespace MarketBoardPlugin.GUI
         MinimumSize = new Vector2(350, 225),
         MaximumSize = new Vector2(float.MaxValue, float.MaxValue),
       };
+
+      this.mannequinIcon = this.plugin.TextureProvider.GetFromGame("ui/uld/Merchant_hr1.tex");
+      if (this.mannequinIcon == null)
+      {
+        this.plugin.Log.Error("Failed to get mannequin icon!");
+      }
 
       this.marketDataCache = [];
       this.items = plugin.DataManager.GetExcelSheet<Item>();
@@ -616,16 +628,19 @@ namespace MarketBoardPlugin.GUI
             this.titleFontHandle.Pop();
 
             ImGui.BeginChild("currentListings", new Vector2(0.0f, tableHeight));
-            ImGui.Columns(5, "currentListingsColumns");
+            ImGui.Columns(6, "currentListingsColumns");
 
             if (!this.hasListingsHQColumnWidthBeenSet)
             {
               ImGui.SetColumnWidth(0, ImGui.GetTextLineHeightWithSpacing() * 1.5f);
+              ImGui.SetColumnWidth(1, ImGui.GetTextLineHeightWithSpacing() * 1.7f);
               this.hasListingsHQColumnWidthBeenSet = true;
             }
 
             ImGui.Separator();
             ImGui.Text("HQ");
+            ImGui.NextColumn();
+            ImGui.Text("模特");
             ImGui.NextColumn();
             ImGui.Text("价格");
             ImGui.NextColumn();
@@ -638,7 +653,9 @@ namespace MarketBoardPlugin.GUI
             ImGui.Separator();
 
             var marketDataListings = this.marketData?.Listings.Where(i => !this.hQOnly || i.Hq)
-              .Where(l => l.Quantity >= this.minQuantityFilter).OrderBy(l => l.PricePerUnit).ToList();
+              .Where(l => l.Quantity >= this.minQuantityFilter)
+              .Where(l => !(this.plugin.Config.FilterMannequinListings && l.OnMannequin))
+              .OrderBy(l => l.PricePerUnit).ToList();
             if (marketDataListings != null)
             {
               foreach (var listing in marketDataListings)
@@ -654,6 +671,25 @@ namespace MarketBoardPlugin.GUI
                 }
 
                 ImGui.NextColumn();
+
+                if (listing.OnMannequin)
+                {
+                  if (this.mannequinIcon != null)
+                  {
+                    ImGui.Image(userTextureId: this.mannequinIcon!.GetWrapOrEmpty().Handle, this.mannequinIconSize, Vector2.Zero, this.mannequinIconUV1);
+                  }
+                  else
+                  {
+                    ImGui.Text("✓");
+                  }
+                }
+                else
+                {
+                  ImGui.Text(string.Empty);
+                }
+
+                ImGui.NextColumn();
+
                 double pricePerUnit = this.plugin.Config.NoGilSalesTax
                   ? listing.PricePerUnit
                   : listing.PricePerUnit + (listing.Tax / listing.Quantity);
@@ -715,16 +751,19 @@ namespace MarketBoardPlugin.GUI
               this.titleFontHandle.Pop();
 
               ImGui.BeginChild("recentHistory", new Vector2(0.0f, tableHeight));
-              ImGui.Columns(6, "recentHistoryColumns");
+              ImGui.Columns(7, "recentHistoryColumns");
 
               if (!this.hasHistoryHQColumnWidthBeenSet)
               {
                 ImGui.SetColumnWidth(0, ImGui.GetTextLineHeightWithSpacing() * 1.5f);
+                ImGui.SetColumnWidth(1, ImGui.GetTextLineHeightWithSpacing() * 1.7f);
                 this.hasHistoryHQColumnWidthBeenSet = true;
               }
 
               ImGui.Separator();
               ImGui.Text("HQ");
+              ImGui.NextColumn();
+              ImGui.Text("模特");
               ImGui.NextColumn();
               ImGui.Text("价格");
               ImGui.NextColumn();
@@ -738,7 +777,7 @@ namespace MarketBoardPlugin.GUI
               ImGui.NextColumn();
               ImGui.Separator();
 
-              var marketDataRecentHistory = this.marketData?.RecentHistory.OrderByDescending(h => h.Timestamp).ToList();
+              var marketDataRecentHistory = this.marketData?.RecentHistory.OrderByDescending(h => h.Timestamp).Where(l => !(this.plugin.Config.FilterMannequinListings && l.OnMannequin)).ToList();
               if (marketDataRecentHistory != null)
               {
                 foreach (var history in marketDataRecentHistory)
@@ -754,6 +793,25 @@ namespace MarketBoardPlugin.GUI
                   }
 
                   ImGui.NextColumn();
+
+                  if (history.OnMannequin)
+                  {
+                    if (this.mannequinIcon != null)
+                    {
+                      ImGui.Image(userTextureId: this.mannequinIcon!.GetWrapOrEmpty().Handle, this.mannequinIconSize, Vector2.Zero, this.mannequinIconUV1);
+                    }
+                    else
+                    {
+                      ImGui.Text("✓");
+                    }
+                  }
+                  else
+                  {
+                    ImGui.Text(string.Empty);
+                  }
+
+                  ImGui.NextColumn();
+
                   if (this.plugin.Config.PriceIconShown)
                   {
                     ImGui.Text(history.PricePerUnit.ToString("C", this.plugin.NumberFormatInfo));
@@ -1191,47 +1249,6 @@ namespace MarketBoardPlugin.GUI
                 this.plugin.Config.HistoryCount,
                 this.currentRefreshCancellationTokenSource.Token)
               .ConfigureAwait(false);
-
-            if (this.selectedWorld == 0 && this.plugin.Config.IncludeOceaniaDC && this.worldList[this.selectedWorld].Item1 != "Oceania")
-            {
-              var oceaniaMarketData = await this.plugin.UniversalisClient
-                .GetMarketData(
-                  this.selectedItem.Value.RowId,
-                  "Oceania",
-                  this.plugin.Config.ListingCount,
-                  this.plugin.Config.HistoryCount,
-                  this.currentRefreshCancellationTokenSource.Token)
-                .ConfigureAwait(false);
-
-              if (oceaniaMarketData != null)
-              {
-                if (this.marketData == null)
-                {
-                  this.marketData = oceaniaMarketData;
-                }
-                else
-                {
-                  foreach (var listing in oceaniaMarketData.Listings)
-                  {
-                    this.marketData.Listings.Add(listing);
-                  }
-
-                  foreach (var history in oceaniaMarketData.RecentHistory)
-                  {
-                    this.marketData.RecentHistory.Add(history);
-                  }
-
-                  this.marketData.Listings = this.marketData.Listings
-                    .OrderBy(l => l.PricePerUnit)
-                    .Take(this.plugin.Config.ListingCount)
-                    .ToList();
-                  this.marketData.RecentHistory = this.marketData.RecentHistory
-                    .OrderByDescending(h => h.Timestamp)
-                    .Take(this.plugin.Config.HistoryCount)
-                    .ToList();
-                }
-              }
-            }
           }
           catch (AggregateException ae)
           {

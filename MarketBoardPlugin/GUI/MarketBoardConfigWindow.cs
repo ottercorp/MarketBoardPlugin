@@ -50,9 +50,9 @@ namespace MarketBoardPlugin
 
       this.Checkbox("隐藏 Ko-Fi 按钮", "启用或禁用 Ko-Fi 按钮", this.Plugin.Config.KofiHidden, (v) => this.Plugin.Config.KofiHidden = v);
 
-      this.Checkbox("Include Oceania DC", "Toggles whether the Oceania DC should be included in the Cross-DC filter", this.Plugin.Config.IncludeOceaniaDC, (v) =>
+      this.Checkbox("过滤模特条目", "将通过模特交易的物品条目过滤", this.Plugin.Config.FilterMannequinListings, (v) =>
       {
-        this.Plugin.Config.IncludeOceaniaDC = v;
+        this.Plugin.Config.FilterMannequinListings = v;
         this.Plugin.PluginInterface.SavePluginConfig(this.Plugin.Config);
         this.Plugin.ResetMarketData();
       });

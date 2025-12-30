@@ -85,8 +85,8 @@ namespace MarketBoardPlugin
     public int HistoryCount { get; set; } = 50;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Oceania DC should be included in the Cross-DC filter.
+    /// Gets or sets a value indicating whether mannequin listings are filtered from the results.
     /// </summary>
-    public bool IncludeOceaniaDC { get; set; } = true;
+    public bool FilterMannequinListings { get; set; }
   }
 }
