@@ -1120,7 +1120,7 @@ namespace MarketBoardPlugin.GUI
 
     private void HandleFrameworkUpdateEvent(IFramework framework)
     {
-      if (this.plugin.PlayerState.ContentId != 0 && this.playerId != this.plugin.PlayerState.ContentId)
+      if (this.plugin.PlayerState.ContentId != 0 && this.playerId != 0 && this.playerId != this.plugin.PlayerState.ContentId)
       {
         this.playerId = 0;
         return;
